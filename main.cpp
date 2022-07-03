@@ -86,8 +86,7 @@ int main(int argc, char** argv)
         else
         {
             cout<<"=== Snake in console ==="<<endl;
-            cout<<"Points: "<<points<<" | Click ESC to go to menu"<<endl;
-            cout<<PlayerPosX<<" "<<PlayerPosY<<" "<<clock()<<" "<<moveTime<<endl;
+            cout<<"Points: "<<points<<" | Click ESC to go to menu\n"<<endl;
 
             for(int i=0; i<GameHeight; i++)
             {
@@ -116,6 +115,8 @@ int main(int argc, char** argv)
 
 void StartMenu()
 {
+    MemClean();
+
     cout<<"========================== Snake in console =========================="<<endl;
     cout<<"Made by Dawid \"Bugi\" Bogusz | Github: https://github.com/BugiBugi205\n"<<endl;
 
@@ -187,7 +188,6 @@ void KeyboardInputHandler()
     //ESC
     case 27:
         gameRunning = false;
-        MemClean();
         break;
     case 'w': case 'W':
         moveDirection=1;

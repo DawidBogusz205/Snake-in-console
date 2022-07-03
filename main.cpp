@@ -8,31 +8,39 @@
 #include <ctime>
 #include <string>
 #include <conio.h>
+#include <math.h>
 
 using namespace std;
 
-unsigned int GameWidth, GameHeight,cmdWidth, cmdHeight, points;
+const uint8_t BORDER_CHAR = 219; //█
+
+unsigned int GameWidth, GameHeight,cmdWidth, cmdHeight, points, moveDirection;
 float GameSpeed;
 string cmdMode;
 bool gameRunning, programRunning;
 char ClickedKey;
 char** gameBoard;
 
+int moveTime = 0;
+
+unsigned int PlayerPosX, PlayerPosY;
+
 //function prototypes
 void StartMenu();
 void KeyboardInputHandler();
 void MemClean();
+void GameLogic();
 
 int main(int argc, char** argv)
 {
     programRunning=true;
 
-    system("mode con:cols=70 lines=35");    //min cols=15 lines=1
-
     while(programRunning)
     {
         if(!gameRunning)
         {
+            system("mode con:cols=70 lines=35");    //min cols=15 lines=1
+
             StartMenu();
             
             GameWidth+=2;
@@ -54,31 +62,36 @@ int main(int argc, char** argv)
 
             for (int i=0; i<GameWidth; i++)
             {
-                gameBoard[i][0] = '#';
-                gameBoard[i][GameHeight-1] = '#';
+                gameBoard[i][0] = BORDER_CHAR;
+                gameBoard[i][GameHeight-1] = BORDER_CHAR;
             }
 
             for (int i = 0; i < GameHeight; i++)
             {
-                gameBoard[0][i] = '#';
-                gameBoard[GameWidth-1][i] = '#';
+                gameBoard[0][i] = BORDER_CHAR;
+                gameBoard[GameWidth-1][i] = BORDER_CHAR;
             }
 
-            if(GameWidth > 35) cmdWidth=GameWidth;
-            else cmdWidth=35;
+            if(GameWidth > 39) cmdWidth=GameWidth;
+            else cmdWidth=39;
             cmdHeight=GameHeight;
+
+            points=0;
+            PlayerPosX = floor(GameWidth/2);
+            PlayerPosY = floor(GameHeight/2);
             
-            cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+2);
+            cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
         }
         else
         {
             cout<<"=== Snake in console ==="<<endl;
             cout<<"Points: "<<points<<" | Click ESC to go to menu"<<endl;
+            cout<<PlayerPosX<<" "<<PlayerPosY<<" "<<clock()<<" "<<moveTime<<endl;
 
-            for(int i=0;i<GameHeight;i++)
+            for(int i=0; i<GameHeight; i++)
             {
-                for(int x=0;x<GameWidth;x++)
+                for(int x=0; x<GameWidth; x++)
                 {
                     cout<<gameBoard[x][i];
                 }
@@ -86,6 +99,8 @@ int main(int argc, char** argv)
             }
 
             KeyboardInputHandler();
+
+            GameLogic();
 
             system("cls");
         }
@@ -101,7 +116,8 @@ int main(int argc, char** argv)
 
 void StartMenu()
 {
-    cout<<"========================== Snake in console ==========================\n"<<endl;
+    cout<<"========================== Snake in console =========================="<<endl;
+    cout<<"Made by Dawid \"Bugi\" Bogusz | Github: https://github.com/BugiBugi205\n"<<endl;
 
     cout<<"Enter game width (min 3): ";
     do{
@@ -142,6 +158,24 @@ void StartMenu()
     gameRunning=true;
 }
 
+void GameLogic()
+{
+    //border collision detection
+    if(PlayerPosX <= 0 || PlayerPosX >= GameWidth || PlayerPosY <= 0 || PlayerPosY >= GameHeight) gameRunning=false;
+
+    gameBoard[PlayerPosX][PlayerPosY] = '#';
+
+    if(clock()>moveTime)
+    {
+        if(moveDirection==1) PlayerPosY--;
+        else if(moveDirection==2) PlayerPosY++;
+        else if(moveDirection==3) PlayerPosX--;
+        else if(moveDirection==4) PlayerPosX++;
+
+        moveTime=clock()+1000;
+    }
+}
+
 void KeyboardInputHandler()
 {
     if(_kbhit()){
@@ -154,6 +188,18 @@ void KeyboardInputHandler()
     case 27:
         gameRunning = false;
         MemClean();
+        break;
+    case 'w': case 'W':
+        moveDirection=1;
+        break;
+    case 's': case 'S':
+        moveDirection=2;
+        break;
+    case 'a': case 'A':
+        moveDirection=3;
+        break;
+    case 'd': case 'D':
+        moveDirection=4;
         break;
     default:
         break;

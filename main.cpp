@@ -200,16 +200,16 @@ void KeyboardInputHandler()
         gameRunning = false;
         break;
     case 'w': case 'W':
-        moveDirection=1;
+        if(moveDirection != 2) moveDirection=1;
         break;
     case 's': case 'S':
-        moveDirection=2;
+        if(moveDirection != 1) moveDirection=2;
         break;
     case 'a': case 'A':
-        moveDirection=3;
+        if(moveDirection != 4) moveDirection=3;
         break;
     case 'd': case 'D':
-        moveDirection=4;
+        if(moveDirection != 3) moveDirection=4;
         break;
     default:
         break;

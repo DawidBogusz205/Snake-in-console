@@ -23,7 +23,7 @@ char** gameBoard;
 
 int moveTime = 0;
 
-unsigned int PlayerPosX, PlayerPosY;
+unsigned int PlayerPosX, PlayerPosY, PlayerLength=1;
 
 //function prototypes
 void StartMenu();
@@ -79,6 +79,7 @@ int main(int argc, char** argv)
             points=0;
             PlayerPosX = floor(GameWidth/2);
             PlayerPosY = floor(GameHeight/2);
+            moveDirection=0;
             
             cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
@@ -161,19 +162,23 @@ void StartMenu()
 
 void GameLogic()
 {
-    //border collision detection
-    if(PlayerPosX <= 0 || PlayerPosX >= GameWidth || PlayerPosY <= 0 || PlayerPosY >= GameHeight) gameRunning=false;
-
-    gameBoard[PlayerPosX][PlayerPosY] = '#';
-
     if(clock()>moveTime)
     {
+        //border collision detection
+        if(PlayerPosX <= 0 || PlayerPosX >= GameWidth-1 || PlayerPosY <= 0 || PlayerPosY >= GameHeight-1)
+        {
+            gameRunning=false;
+            return;
+        }
+
+        gameBoard[PlayerPosX][PlayerPosY] = '#';
+
         if(moveDirection==1) PlayerPosY--;
         else if(moveDirection==2) PlayerPosY++;
         else if(moveDirection==3) PlayerPosX--;
         else if(moveDirection==4) PlayerPosX++;
 
-        moveTime=clock()+1000;
+        moveTime=clock()+200;
     }
 }
 

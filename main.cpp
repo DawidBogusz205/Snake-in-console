@@ -180,6 +180,11 @@ void GameLogic()
 
         moveTime=clock()+200;
     }
+    if(PlayerLength==GameWidth*GameHeight)
+    {
+        gameRunning=false;
+        return;
+    } 
 }
 
 void KeyboardInputHandler()

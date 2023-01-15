@@ -14,10 +14,10 @@ using namespace std;
 
 const uint8_t BORDER_CHAR = 219; //█
 
-unsigned int GameWidth, GameHeight,cmdWidth, cmdHeight, points, moveDirection;
+unsigned int GameWidth, GameHeight, cmdWidth, cmdHeight, points, moveDirection;
 float GameSpeed;
 string cmdMode;
-bool gameRunning, programRunning;
+bool gameRunning, programRunning, gamePaused;
 char ClickedKey;
 char** gameBoard;
 
@@ -80,6 +80,9 @@ int main(int argc, char** argv)
             PlayerPosX = floor(GameWidth/2);
             PlayerPosY = floor(GameHeight/2);
             moveDirection=0;
+
+            gameRunning=true;
+            gamePaused=false;
             
             cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
@@ -99,6 +102,14 @@ int main(int argc, char** argv)
             }
 
             KeyboardInputHandler();
+            
+            //pause
+            if(gamePaused)
+            {
+                cout<<"\nGame Paused";
+
+                while(gamePaused) KeyboardInputHandler();
+            }
 
             GameLogic();
 
@@ -156,9 +167,7 @@ void StartMenu()
         }
         else if(GameSpeed<=0) cout<<"Enter correct value: ";
     } while (GameSpeed<=0);
-
-    gameRunning=true;
-}
+} 
 
 void GameLogic()
 {
@@ -191,13 +200,15 @@ void KeyboardInputHandler()
 {
     if(_kbhit()){
         ClickedKey = _getch();
-    }
+    }    
 
     switch (ClickedKey)
     {
-    //ESC
-    case 27:
+    case 27: //ESC
         gameRunning = false;
+        break;
+    case ' ':
+        gamePaused = !gamePaused;
         break;
     case 'w': case 'W':
         if(moveDirection != 2) moveDirection=1;
@@ -214,7 +225,7 @@ void KeyboardInputHandler()
     default:
         break;
     }
-    ClickedKey='P';
+    ClickedKey=0;
 }
 
 void MemClean()

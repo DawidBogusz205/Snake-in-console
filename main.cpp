@@ -10,12 +10,22 @@
 #include <conio.h>
 #include <math.h>
 
+//for time control
+#include <chrono>
+#include <thread>
+using namespace std::this_thread; // sleep_for, sleep_until
+using namespace std::chrono; // nanoseconds, system_clock, seconds
+
+//#include <vector>
+//#include <stack>
+
 using namespace std;
+
 
 const uint8_t BORDER_CHAR = 219; //█
 
 unsigned int GameWidth, GameHeight, cmdWidth, cmdHeight, points, moveDirection;
-float GameSpeed;
+int GameSpeed;
 string cmdMode;
 bool gameRunning, programRunning, gamePaused;
 char ClickedKey;
@@ -27,6 +37,7 @@ unsigned int PlayerPosX, PlayerPosY, PlayerLength=1;
 
 //function prototypes
 void StartMenu();
+void GameBoardInit();
 void KeyboardInputHandler();
 void MemClean();
 void GameLogic();
@@ -37,44 +48,21 @@ int main(int argc, char** argv)
 
     while(programRunning)
     {
-        if(!gameRunning)
+        if(!gameRunning) // if game is not running show menu
         {
             system("mode con:cols=70 lines=35");    //min cols=15 lines=1
 
             StartMenu();
             
+            //add borders to game size
             GameWidth+=2;
             GameHeight+=2;
 
-            gameBoard = new char *[GameWidth];
-            for(int i=0; i<GameWidth; i++)
-            {
-                gameBoard[i] = new char [GameHeight];
-            }
-
-            for(int i=0; i<GameHeight; i++)
-            {
-                for(int x=0; x<GameWidth; x++)
-                {
-                    gameBoard[x][i] = ' ';
-                }
-            }
-
-            for (int i=0; i<GameWidth; i++)
-            {
-                gameBoard[i][0] = BORDER_CHAR;
-                gameBoard[i][GameHeight-1] = BORDER_CHAR;
-            }
-
-            for (int i = 0; i < GameHeight; i++)
-            {
-                gameBoard[0][i] = BORDER_CHAR;
-                gameBoard[GameWidth-1][i] = BORDER_CHAR;
-            }
+            GameBoardInit();
 
             if(GameWidth > 39) cmdWidth=GameWidth;
-            else cmdWidth=39;
-            cmdHeight=GameHeight;
+            else cmdWidth = 39;
+            cmdHeight = GameHeight;
 
             points=0;
             PlayerPosX = floor(GameWidth/2);
@@ -113,11 +101,11 @@ int main(int argc, char** argv)
 
             GameLogic();
 
-            system("cls");
+            system("cls"); //clear console
         }
     }
 
-    system("pause");
+    system("pause"); //wait for user input before closing console
     return 0;
 }
 
@@ -159,6 +147,7 @@ void StartMenu()
     cout<<"\nEnter game speed (tiles/s): ";
     do{
         cin>>GameSpeed;
+        GameSpeed = 1000/GameSpeed;
         if (cin.fail())
         {
             cin.clear();
@@ -187,13 +176,45 @@ void GameLogic()
         else if(moveDirection==3) PlayerPosX--;
         else if(moveDirection==4) PlayerPosX++;
 
-        moveTime=clock()+200;
+        sleep_for(seconds(1));
+        //moveTime=clock()+GameSpeed;
     }
     if(PlayerLength==GameWidth*GameHeight)
     {
         gameRunning=false;
         return;
     } 
+}
+
+void GameBoardInit()
+{
+    //creates 2d array od gameboard
+    gameBoard = new char *[GameWidth];
+    for(int i=0; i<GameWidth; i++)
+    {
+        gameBoard[i] = new char [GameHeight];
+    }
+
+    //fills gameboard array with empty spaces
+    for(int i=0; i<GameHeight; i++)
+    {
+        for(int x=0; x<GameWidth; x++)
+        {
+            gameBoard[x][i] = ' ';
+        }
+    }
+
+    //fills gameboard array borders with special character
+    for (int i=0; i<GameWidth; i++)
+    {
+        gameBoard[i][0] = BORDER_CHAR; //top
+        gameBoard[i][GameHeight-1] = BORDER_CHAR; //bottom
+    }
+    for (int i = 0; i < GameHeight; i++)
+    {
+        gameBoard[0][i] = BORDER_CHAR; //left
+        gameBoard[GameWidth-1][i] = BORDER_CHAR; //right
+    }
 }
 
 void KeyboardInputHandler()

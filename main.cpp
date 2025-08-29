@@ -30,6 +30,7 @@ string cmdMode;
 bool gameRunning, programRunning, gamePaused;
 char ClickedKey;
 char** gameBoard;
+char** tempGameBoard;
 
 int moveTime = 0;
 
@@ -38,6 +39,9 @@ unsigned int PlayerPosX, PlayerPosY, PlayerLength=1;
 //function prototypes
 void StartMenu();
 void GameBoardInit();
+void GameBoardPrint();
+void GameBoardCopy(char** src, char** dest);
+bool GameBoardChanged(char** a, char** b);
 void KeyboardInputHandler();
 void MemClean();
 void GameLogic();
@@ -58,7 +62,7 @@ int main(int argc, char** argv)
             GameWidth+=2;
             GameHeight+=2;
 
-            GameBoardInit();
+            GameBoardInit(); //initialize game board
 
             if(GameWidth > 39) cmdWidth=GameWidth;
             else cmdWidth = 39;
@@ -77,20 +81,8 @@ int main(int argc, char** argv)
         }
         else
         {
-            cout<<"=== Snake in console ==="<<endl;
-            cout<<"Points: "<<points<<" | Click ESC to go to menu\n"<<endl;
+            GameBoardCopy(gameBoard, tempGameBoard); //copy game board to temp array for further detection of changes
 
-            for(int i=0; i<GameHeight; i++)
-            {
-                for(int x=0; x<GameWidth; x++)
-                {
-                    cout<<gameBoard[x][i];
-                }
-                if(i!=GameHeight-1) cout<<endl;
-            }
-
-            KeyboardInputHandler();
-            
             //pause
             if(gamePaused)
             {
@@ -99,9 +91,20 @@ int main(int argc, char** argv)
                 while(gamePaused) KeyboardInputHandler();
             }
 
+            KeyboardInputHandler(); //check for keyboard input
+
             GameLogic();
 
-            system("cls"); //clear console
+            //checks if there were any changes in game board and if so, clears console and prints new game board
+            if(GameBoardChanged(gameBoard, tempGameBoard))
+            {
+                system("cls"); //clear console command
+
+                cout<<"=== Snake in console ==="<<endl;
+                cout<<"Points: "<<points<<" | Click ESC to go to menu\n"<<endl;
+
+                GameBoardPrint(); //print game board
+            }
         }
     }
 
@@ -176,8 +179,8 @@ void GameLogic()
         else if(moveDirection==3) PlayerPosX--;
         else if(moveDirection==4) PlayerPosX++;
 
-        sleep_for(seconds(1));
-        //moveTime=clock()+GameSpeed;
+        //sleep_for(seconds(1));
+        moveTime = clock() + GameSpeed;
     }
     if(PlayerLength==GameWidth*GameHeight)
     {
@@ -193,6 +196,13 @@ void GameBoardInit()
     for(int i=0; i<GameWidth; i++)
     {
         gameBoard[i] = new char [GameHeight];
+    }
+
+    //creates 2d array od temp gameboard
+    tempGameBoard = new char *[GameWidth];
+    for(int i=0; i<GameWidth; i++)
+    {
+        tempGameBoard[i] = new char [GameHeight];
     }
 
     //fills gameboard array with empty spaces
@@ -215,6 +225,38 @@ void GameBoardInit()
         gameBoard[0][i] = BORDER_CHAR; //left
         gameBoard[GameWidth-1][i] = BORDER_CHAR; //right
     }
+}
+
+void GameBoardPrint()
+{
+    for(int i=0; i<GameHeight; i++)
+    {
+        for(int x=0; x<GameWidth; x++)
+        {
+            cout<<gameBoard[x][i];
+        }
+        if(i != GameHeight-1) cout<<endl;
+    }
+}
+
+//copies game board array to temp array
+void GameBoardCopy(char** src, char** dest) {
+    for(int i=0; i<GameWidth; i++)
+    {
+        for(int j=0; j<GameHeight; j++)
+        {
+            dest[i][j] = src[i][j];
+        }
+    }
+}
+
+//checks if game board changed
+bool GameBoardChanged(char** a, char** b) {
+    for(int i=0; i<GameWidth; i++)
+        for(int j=0; j<GameHeight; j++)
+            if(a[i][j] != b[i][j])
+                return true;
+    return false;
 }
 
 void KeyboardInputHandler()
@@ -257,4 +299,12 @@ void MemClean()
     }
 
     delete [] gameBoard;
+
+    for(int i=0; i<GameWidth; i++)
+    {
+        delete [] gameBoard[i];
+        delete [] tempGameBoard[i];
+    }
+
+    delete [] tempGameBoard;
 }

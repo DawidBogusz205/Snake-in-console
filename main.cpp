@@ -79,17 +79,9 @@ int main(int argc, char** argv)
             cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
         }
-        else
+        else if(gameRunning && !gamePaused) //if game is running and not paused
         {
             GameBoardCopy(gameBoard, tempGameBoard); //copy game board to temp array for further detection of changes
-
-            //pause
-            if(gamePaused)
-            {
-                cout<<"\nGame Paused";
-
-                while(gamePaused) KeyboardInputHandler();
-            }
 
             KeyboardInputHandler(); //check for keyboard input
 
@@ -105,6 +97,10 @@ int main(int argc, char** argv)
 
                 GameBoardPrint(); //print game board
             }
+        }
+        else if(gameRunning && gamePaused) //if game is paused
+        {
+            KeyboardInputHandler(); //check for keyboard input
         }
     }
 
@@ -272,6 +268,7 @@ void KeyboardInputHandler()
         break;
     case ' ':
         gamePaused = !gamePaused;
+        if(gamePaused) cout<<"\nGame Paused"; //notify user that game is paused
         break;
     case 'w': case 'W':
         if(moveDirection != 2) moveDirection=1;

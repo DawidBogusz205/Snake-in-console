@@ -5,12 +5,12 @@
 
 #include <iostream>
 #include <Windows.h>
-#include <ctime>
 #include <string>
 #include <conio.h>
 #include <math.h>
 
 //for time control
+#include <ctime>
 #include <chrono>
 #include <thread>
 using namespace std::this_thread; // sleep_for, sleep_until
@@ -48,7 +48,7 @@ void GameLogic();
 
 int main(int argc, char** argv)
 {
-    programRunning=true;
+    programRunning = true;
 
     while(programRunning)
     {
@@ -68,13 +68,15 @@ int main(int argc, char** argv)
             else cmdWidth = 39;
             cmdHeight = GameHeight;
 
-            points=0;
+            points = 0;
+
             PlayerPosX = floor(GameWidth/2);
             PlayerPosY = floor(GameHeight/2);
-            moveDirection=0;
 
-            gameRunning=true;
-            gamePaused=false;
+            moveDirection = 0;
+
+            gameRunning = true;
+            gamePaused = false;
             
             cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
@@ -164,23 +166,26 @@ void GameLogic()
         //border collision detection
         if(PlayerPosX <= 0 || PlayerPosX >= GameWidth-1 || PlayerPosY <= 0 || PlayerPosY >= GameHeight-1)
         {
-            gameRunning=false;
+            gameRunning = false;
             return;
         }
 
         gameBoard[PlayerPosX][PlayerPosY] = '#';
 
-        if(moveDirection==1) PlayerPosY--;
-        else if(moveDirection==2) PlayerPosY++;
-        else if(moveDirection==3) PlayerPosX--;
-        else if(moveDirection==4) PlayerPosX++;
+        if      (moveDirection == 1) PlayerPosY--;
+        else if (moveDirection == 2) PlayerPosY++;
+        else if (moveDirection == 3) PlayerPosX--;
+        else if (moveDirection == 4) PlayerPosX++;
 
         //sleep_for(seconds(1));
         moveTime = clock() + GameSpeed;
     }
-    if(PlayerLength==GameWidth*GameHeight)
+    
+    //if snake fills whole board
+    if(PlayerLength == GameWidth * GameHeight)
     {
-        gameRunning=false;
+        //win condition
+        gameRunning = false;
         return;
     } 
 }
@@ -266,7 +271,7 @@ void KeyboardInputHandler()
     case 27: //ESC
         gameRunning = false;
         break;
-    case ' ':
+    case ' ': //space
         gamePaused = !gamePaused;
         if(gamePaused) cout<<"\nGame Paused"; //notify user that game is paused
         break;
@@ -285,7 +290,7 @@ void KeyboardInputHandler()
     default:
         break;
     }
-    ClickedKey=0;
+    ClickedKey = 0;
 }
 
 void MemClean()

@@ -54,8 +54,9 @@ int main(int argc, char** argv)
     {
         if(!gameRunning) // if game is not running show menu
         {
+            MemClean();
             system("mode con:cols=70 lines=35");    //min cols=15 lines=1
-
+            
             StartMenu();
             
             //add borders to game size
@@ -116,8 +117,6 @@ int main(int argc, char** argv)
 
 void StartMenu()
 {
-    MemClean();
-
     cout<<"========================== Snake in console =========================="<<endl;
     cout<<"Made by Dawid \"Bugi\" Bogusz | Github: https://github.com/BugiBugi205\n"<<endl;
 
@@ -298,15 +297,9 @@ void MemClean()
     for(int i=0; i<GameWidth; i++)
     {
         delete [] gameBoard[i];
-    }
-
-    delete [] gameBoard;
-
-    for(int i=0; i<GameWidth; i++)
-    {
-        delete [] gameBoard[i];
         delete [] tempGameBoard[i];
     }
 
+    delete [] gameBoard;
     delete [] tempGameBoard;
 }

@@ -162,15 +162,7 @@ void GameLogic()
 {
     if(clock()>moveTime)
     {
-        //border collision detection
-        if(PlayerPosX <= 0 || PlayerPosX >= GameWidth-1 || PlayerPosY <= 0 || PlayerPosY >= GameHeight-1)
-        {
-            gameRunning = false;
-            return;
-        }
-        
-        
-        
+        //move player
         if      (moveDirection == 1) PlayerPosY--;
         else if (moveDirection == 2) PlayerPosY++;
         else if (moveDirection == 3) PlayerPosX--;
@@ -178,6 +170,13 @@ void GameLogic()
         
         //self collision detection
         if(gameBoard[PlayerPosX][PlayerPosY] == '#' && moveDirection != 0)
+        {
+            gameRunning = false;
+            return;
+        }
+
+        //border collision detection
+        if(PlayerPosX <= 0 || PlayerPosX >= GameWidth-1 || PlayerPosY <= 0 || PlayerPosY >= GameHeight-1)
         {
             gameRunning = false;
             return;

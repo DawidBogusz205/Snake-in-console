@@ -168,15 +168,17 @@ void GameLogic()
             gameRunning = false;
             return;
         }
-
-        gameBoard[PlayerPosX][PlayerPosY] = '#';
-
+        
+        
+        
         if      (moveDirection == 1) PlayerPosY--;
         else if (moveDirection == 2) PlayerPosY++;
         else if (moveDirection == 3) PlayerPosX--;
         else if (moveDirection == 4) PlayerPosX++;
 
         //sleep_for(seconds(1));
+        gameBoard[PlayerPosX][PlayerPosY] = '#';
+        
         moveTime = clock() + GameSpeed;
     }
     

@@ -55,27 +55,27 @@ int main(int argc, char** argv)
         if(!gameRunning) // if game is not running show menu
         {
             MemClean();
-            system("mode con:cols=70 lines=35");    //min cols=15 lines=1
+            system("mode con:cols=72 lines=35");    //min cols=15 lines=1
             
             StartMenu();
             
             //add borders to game size
             GameWidth+=2;
             GameHeight+=2;
-
+            
             GameBoardInit(); //initialize game board
-
+            
             if(GameWidth > 39) cmdWidth=GameWidth;
             else cmdWidth = 39;
             cmdHeight = GameHeight;
-
+            
             points = 0;
-
+            
             PlayerPosX = floor(GameWidth/2);
             PlayerPosY = floor(GameHeight/2);
-
+            
             moveDirection = 0;
-
+            
             gameRunning = true;
             gamePaused = false;
             
@@ -85,19 +85,19 @@ int main(int argc, char** argv)
         else if(gameRunning && !gamePaused) //if game is running and not paused
         {
             GameBoardCopy(gameBoard, tempGameBoard); //copy game board to temp array for further detection of changes
-
+            
             KeyboardInputHandler(); //check for keyboard input
-
+            
             GameLogic();
-
+            
             //checks if there were any changes in game board and if so, clears console and prints new game board
             if(GameBoardChanged(gameBoard, tempGameBoard))
             {
                 system("cls"); //clear console command
-
+                
                 cout<<"=== Snake in console ==="<<endl;
                 cout<<"Points: "<<points<<" | Click ESC to go to menu\n"<<endl;
-
+                
                 GameBoardPrint(); //print game board
             }
         }
@@ -117,8 +117,8 @@ int main(int argc, char** argv)
 
 void StartMenu()
 {
-    cout<<"========================== Snake in console =========================="<<endl;
-    cout<<"Made by Dawid \"Bugi\" Bogusz | Github: https://github.com/BugiBugi205\n"<<endl;
+    cout<<"========================== Snake in console ==========================="<<endl;
+    cout<<"Made by Dawid \"Bugi\" Bogusz | Github: https://github.com/DawidBogusz205\n"<<endl;
 
     cout<<"Enter game width (min 3): ";
     do{
@@ -175,8 +175,6 @@ void GameLogic()
         else if (moveDirection == 2) PlayerPosY++;
         else if (moveDirection == 3) PlayerPosX--;
         else if (moveDirection == 4) PlayerPosX++;
-
-        //sleep_for(seconds(1));
         
         //self collision detection
         if(gameBoard[PlayerPosX][PlayerPosY] == '#' && moveDirection != 0)

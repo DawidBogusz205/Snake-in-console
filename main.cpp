@@ -16,11 +16,10 @@
 using namespace std::this_thread; // sleep_for, sleep_until
 using namespace std::chrono; // nanoseconds, system_clock, seconds
 
-//#include <vector>
-//#include <stack>
+#include <deque>
+#include <array>
 
 using namespace std;
-
 
 const uint8_t BORDER_CHAR = 219; //█
 
@@ -34,7 +33,9 @@ char** tempGameBoard;
 
 int moveTime = 0;
 
-unsigned int PlayerPosX, PlayerPosY, PlayerLength=1;
+unsigned int PlayerPosX, PlayerPosY, PlayerLength = 3;
+
+deque<array<unsigned int, 2>> snakeBody; //to store snake body parts positions
 
 //function prototypes
 void StartMenu();
@@ -75,6 +76,8 @@ int main(int argc, char** argv)
             PlayerPosY = floor(GameHeight/2);
 
             gameBoard[PlayerPosX][PlayerPosY] = '#'; //player symbol at start position
+
+            snakeBody.push_front({PlayerPosX, PlayerPosY}); //store initial head position
             
             moveDirection = 0;
             
@@ -195,6 +198,15 @@ void GameLogic()
         }
         
         gameBoard[PlayerPosX][PlayerPosY] = '#';
+        
+        snakeBody.push_front({PlayerPosX, PlayerPosY}); //store new head position
+        
+        if(snakeBody.size() > PlayerLength) //if snake is longer than it should be, remove last part
+        {
+            array<unsigned int, 2> tail = snakeBody.back();
+            gameBoard[tail[0]][tail[1]] = ' '; //remove tail from game board
+            snakeBody.pop_back();
+        }
         
         moveTime = clock() + GameSpeed;
     }

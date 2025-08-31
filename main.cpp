@@ -172,6 +172,8 @@ void GameLogic()
         if(gameBoard[PlayerPosX][PlayerPosY] == '#' && moveDirection != 0)
         {
             gameRunning = false;
+            cout<<"\nYou hit yourself! Game over\n"<<endl;
+            system("pause");
             return;
         }
 
@@ -179,6 +181,8 @@ void GameLogic()
         if(PlayerPosX <= 0 || PlayerPosX >= GameWidth-1 || PlayerPosY <= 0 || PlayerPosY >= GameHeight-1)
         {
             gameRunning = false;
+            cout<<"\nYou hit the border! Game over\n"<<endl;
+            system("pause");
             return;
         }
         

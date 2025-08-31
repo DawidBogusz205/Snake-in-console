@@ -177,6 +177,14 @@ void GameLogic()
         else if (moveDirection == 4) PlayerPosX++;
 
         //sleep_for(seconds(1));
+        
+        //self collision detection
+        if(gameBoard[PlayerPosX][PlayerPosY] == '#' && moveDirection != 0)
+        {
+            gameRunning = false;
+            return;
+        }
+        
         gameBoard[PlayerPosX][PlayerPosY] = '#';
         
         moveTime = clock() + GameSpeed;

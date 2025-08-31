@@ -73,6 +73,8 @@ int main(int argc, char** argv)
             
             PlayerPosX = floor(GameWidth/2);
             PlayerPosY = floor(GameHeight/2);
+
+            gameBoard[PlayerPosX][PlayerPosY] = '#'; //player symbol at start position
             
             moveDirection = 0;
             
@@ -81,6 +83,11 @@ int main(int argc, char** argv)
             
             cmdMode = "mode con:cols=" + to_string(cmdWidth) + " lines=" + to_string(cmdHeight+3);
             system(cmdMode.c_str());    //c_str converts string to const char*
+
+            //initial game print
+            cout<<"=== Snake in console ==="<<endl;
+            cout<<"Points: "<<points<<" | Click ESC to go to menu\n"<<endl;
+            GameBoardPrint(); //print game board
         }
         else if(gameRunning && !gamePaused) //if game is running and not paused
         {
@@ -167,6 +174,7 @@ void GameLogic()
         else if (moveDirection == 2) PlayerPosY++;
         else if (moveDirection == 3) PlayerPosX--;
         else if (moveDirection == 4) PlayerPosX++;
+        else return; //if no direction is set, return
         
         //self collision detection
         if(gameBoard[PlayerPosX][PlayerPosY] == '#' && moveDirection != 0)

@@ -3,11 +3,14 @@
  * @date 2022-06-01
  */
 
+#define DEBUG_INFO_TO_FILE
+
 #include <iostream>
 #include <Windows.h>
 #include <string>
 #include <conio.h>
 #include <math.h>
+#include <fstream>
 
 //for time control
 #include <ctime>
@@ -20,6 +23,15 @@ using namespace std::chrono; // nanoseconds, system_clock, seconds
 #include <array>
 
 using namespace std;
+
+//==================================
+
+namespace file
+{
+    //for file writing
+    const bool OVERWRITE = true;
+    const bool APPEND = false;
+}
 
 const uint8_t BORDER_CHAR = 219; //█
 
@@ -46,10 +58,13 @@ bool GameBoardChanged(char** a, char** b);
 void KeyboardInputHandler();
 void MemClean();
 void GameLogic();
+void WriteToFile(string filename, bool fileMode, string text);
 
 int main(int argc, char** argv)
 {
     programRunning = true;
+
+    WriteToFile("debug.txt", file::APPEND, "Program started");
 
     while(programRunning)
     {
@@ -323,6 +338,33 @@ void KeyboardInputHandler()
     ClickedKey = 0;
 }
 
+void WriteToFile(string filename, bool fileMode, string text)
+{
+    if (filename == "debug.txt")
+    {
+        #ifdef DEBUG_INFO_TO_FILE
+            //write debug info to file
+            ofstream File(filename, fileMode ? ios::trunc : ios::app); //open file in overwrite or append mode
+            if (File.is_open()) 
+            {
+                File << text << endl;
+            }
+            File.close();
+        #endif
+    }
+    else
+    {
+        //write to other files
+        ofstream File(filename, fileMode ? ios::trunc : ios::app); //open file in overwrite or append mode
+        if (File.is_open())
+        {
+            File << text << endl;
+        }
+        File.close();
+    }
+    
+}
+
 void MemClean()
 {
     for(int i=0; i<GameWidth; i++)
@@ -333,4 +375,6 @@ void MemClean()
 
     delete [] gameBoard;
     delete [] tempGameBoard;
+
+    WriteToFile("debug.txt", file::APPEND, "Cleared memory" );
 }

@@ -340,6 +340,16 @@ void KeyboardInputHandler()
 
 void WriteToFile(string filename, bool fileMode, string text)
 {
+    auto now = std::chrono::system_clock::now(); //get current time
+    std::time_t now_c = std::chrono::system_clock::to_time_t(now); //convert to time_t
+    std::tm* tm_ptr = std::localtime(&now_c);
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000; //get milliseconds
+    string ms_str = to_string(ms.count()); //convert milliseconds to string
+    ms_str.insert(0, 3 - ms_str.length(), '0'); //pad with leading zeros if needed
+    char buffer[24]; //buffer for time string
+    std::strftime(buffer, sizeof(buffer), "%Y.%m.%d %H:%M:%S", tm_ptr); //format time to string
+    string timeStamp = string(buffer) + "_" + ms_str; //combine date and milliseconds to final timestamp string
+    
     if (filename == "debug.txt")
     {
         #ifdef DEBUG_INFO_TO_FILE
@@ -347,7 +357,7 @@ void WriteToFile(string filename, bool fileMode, string text)
             ofstream File(filename, fileMode ? ios::trunc : ios::app); //open file in overwrite or append mode
             if (File.is_open()) 
             {
-                File << text << endl;
+                File << timeStamp << " | " << text << endl;
             }
             File.close();
         #endif
